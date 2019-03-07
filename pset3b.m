@@ -1,4 +1,4 @@
-%% pset 4
+%% pset 3
 clear;
 clc;
 %% Basic tutorial
