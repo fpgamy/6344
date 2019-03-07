@@ -1,7 +1,5 @@
 clear;
 clc;
-
-
 %% Basic tutorial
 % Load the image
 I = imread('lena.jpg');
