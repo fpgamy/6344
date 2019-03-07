@@ -44,11 +44,11 @@ img_in = bw - 128;
 % imshow(res);
 
 %% Problem 10
-img_in_256 = img_in(1:2:end, 1:2:end);
+img_in_256 = img_in(1:2:end, 1:2:end) + 128;
 
 figure;
 subplot(3, 2, 1);
-imshow(img_in_256 + 128);
+imshow(img_in_256);
 
 h12 = zeros(20, 20);
 for i = 1:20
@@ -58,14 +58,14 @@ for i = 1:20
        h12(i, j) = h1*h2/10000;
     end
 end
-res = conv2(img_in_256, h12) + 128;
+res = conv2(img_in_256, h12);
 subplot(3, 2, 2);
 imshow(res);
 % res is size 275 by 275
 
 % show result
 subplot(3, 2, 3);
-imshow(img_in_256+128);
+imshow(img_in_256);
 fun = @(block_struct) h_filt(block_struct.data, h12);
 res = zeros(275, 275);
 temp = (blockproc(img_in_256, [32 32], fun));
@@ -79,7 +79,7 @@ for i = 1:8
         prev = res(startx:(startx+50), starty:(starty+50));
         res(startx:(startx+50), starty:(starty+50)) = prev + temp(startx2:(startx2+50), starty2:(starty2+50));
         subplot(3, 2, 4);
-        imshow(res + 128);
+        imshow(res);
         pause(0.01);
     end
 end
@@ -95,7 +95,7 @@ f2 = fft2(h12, 512, 512);
 out = ifft2(f1.*f2, 512, 512);
 out = out(1:275, 1:275);
 subplot(3, 2, 6);
-imshow(res + 128);
+imshow(res);
 
 function out = h_filt(img, h)
     f1 = fft2(img, 64, 64);
