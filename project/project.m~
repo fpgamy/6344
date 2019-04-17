@@ -40,15 +40,15 @@ end
 filt_b = filt_b.*(1/sum(filt_b));
 
 % smoothing function for peak motion
-no_taps_motion = 4;
-delay_factor_weight_motion = 0.5;
+no_taps = 4;
+delay_factor_weight = 0.5;
 
 motion_filt_a = 1;
-motion_filt_b = ones(1, no_taps_motion);
-for i=1:no_taps_motion
-    motion_filt_b(i:end) = motion_filt_b(i:end).*delay_factor_weight_motion;
+motion_filt_b = ones(1, no_taps);
+for i=1:no_taps
+    filt_b(i:end) = filt_b(i:end).*delay_factor_weight;
 end
-motion_filt_b = motion_filt_b.*(1/sum(motion_filt_b));
+filt_b = filt_b.*(1/sum(filt_b));
 
 % percentile to remove non-peaks
 peak_percentile = 0.5;
@@ -181,7 +181,8 @@ for i = 1:200
             written_loc_ind = 1;
         end
         
-        plot(locations(1,:), zeros(1, numel(locations(1,:))), 'LineStyle', 'none', 'Marker', '*', 'MarkerSize', 10);
+        % ideally some filtering can happen here
+        plot(locs, zeros(1, numel(locs)), 'LineStyle', 'none', 'Marker', '*', 'MarkerSize', 10);
         hold off;
     end
 end
