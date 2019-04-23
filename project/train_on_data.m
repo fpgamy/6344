@@ -33,18 +33,12 @@ YTest = [YTest1 ; YTest2 ; YTest3 ; YTest4];
 clearvars -except XTrain XTest YTrain YTest numHiddenUnits
 numFeatures = 48;
 numClasses = 3;
-% epochs = 800;
-% l2Reg = 75e-5;
-% numHiddenUnits = 10;
-% dropout = 0.6;
+epochs = 500;
+l2Reg = 75e-5;
+numHiddenUnits = 10;
+dropout = 0;
 
-
-epochs = 200;
 t = [];
-count = 0;
-for l2Reg = 25e-5:25e-5:75e-5
-        for dropout = 0:0.3:0.9
-            count = count + 1;
 options = trainingOptions('adam', ...
     'MaxEpochs',epochs, ...
     'GradientThreshold',2, ...
@@ -61,14 +55,4 @@ layers = [ ...
     softmaxLayer
     classificationLayer];
 
-net.trainParam.showWindow = false;
-Net.trainParam.showWindow = false;
 [net1,tinfo] = trainNetwork(XTrain,YTrain,layers,options);
-t = [t tinfo];
-save('tinfofile', 't');
-disp('L2')
-disp(l2Reg)
-disp('dropout')
-disp(dropout)
-        end
-end

@@ -2,8 +2,7 @@
 clear;
 clc;
 
-load('Net2.mat');
-
+load('Net1.mat');
 %% Stream Sobel from from webcam to video output
 cam = webcam;
 %% Running step
@@ -64,8 +63,7 @@ prev_down_sf = 0.9;
 
 cap_scene = 1;
 disp('Capturing Scene (Please Wait)...');
-% run for short 200 frames
-% for i = 1:500
+% run frames
 while 1
     % get an image
     I = snapshot(cam);
@@ -145,25 +143,6 @@ while 1
         end
         % sum chunks of smooth
         sum_arr_next = sum(reshape(smooth_new,r_width,[]));
-        
-%         X = zeros(80, 1);
-%         X(1:16,:) = sum_arr_norm;
-%         lshift = circshift(sum_arr_prev, -1);
-%         rshift = circshift(sum_arr_prev, 1);
-% 
-%         X(17:32,:) = sum_arr_norm - circshift(sum_arr_norm, 1);
-%         d = sum_arr_norm-sum_arr_prev;
-% 
-%         X(33:48,:) = d - circshift(d, 1);
-%         X(49:64,:) = sum_arr_norm - rshift;
-%         X(65:80,:) = sum_arr_norm - lshift;
-%         plot(X(1:16,:), 'LineStyle', 'none', 'Marker', 'diamond', 'MarkerSize', 10);
-%         hold on;
-%         plot(X(17:32,:), 'LineStyle', 'none', 'Marker', 'x', 'MarkerSize', 10);
-%         plot(X(33:48,:), 'LineStyle', 'none', 'Marker', '+', 'MarkerSize', 10);
-%         plot(X(49:64,:), 'LineStyle', 'none', 'Marker', 'o', 'MarkerSize', 10);
-%         plot(X(65:80,:), 'LineStyle', 'none', 'Marker', '*', 'MarkerSize', 10);
-%         hold off;
 
         X = zeros(48, 1);
         X(1:16,:) = sum_arr_norm;
@@ -201,6 +180,4 @@ while 1
         sum_arr = sum_arr_next;
     end
 end
-
-stop(player)
 
