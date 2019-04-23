@@ -61,6 +61,9 @@ prev_right = 0;
 prev_up_sf = 1.1;
 prev_down_sf = 0.9;
 
+% check if we need to readjust scene
+stationary_count = 0;
+
 cap_scene = 1;
 disp('Capturing Scene (Please Wait)...');
 % run frames
@@ -157,6 +160,7 @@ while 1
         plot(X(33:48,:), 'LineStyle', 'none', 'Marker', '+', 'MarkerSize', 10);
         hold off;
         if (max(abs(sum_arr_next - sum_arr)) > stationionary_thres)
+            stationary_count = 0;
             YPred = classify(net1,X);
             if (YPred == categorical(3))
                 disp('Right');
@@ -174,6 +178,16 @@ while 1
                         disp(scale);
                     end
                 end
+            end
+        else
+            stationary_count = stationary_count + 1;
+            if (stationary_count > 50)
+                disp('Capuring Scene');
+                run_once = 0;
+                cap_scene = 1;
+                stationary_count = 0;                
+                smooth_buffer = zeros(smooth_buff_sz, 256);
+                smooth_buffer_cntr = 1;
             end
         end
         
