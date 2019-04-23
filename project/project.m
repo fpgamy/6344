@@ -4,7 +4,6 @@ clc;
 
 %% Stream Sobel from from webcam to video output
 cam = webcam;
-
 %% Running step
 % Get image from camera
 
@@ -31,9 +30,6 @@ for i=1:no_taps
 end
 filt_b = filt_b.*(1/sum(filt_b));
 
-% percentile to remove non-peaks
-peak_percentile = 0.5;
-
 % noise threshold
 noise_thresh = 0.1;
 
@@ -46,6 +42,7 @@ x_locs = (1:regions)*r_width - r_width/2;
 
 % left and right threshold
 lr_thresh = 4000;
+stationionary_thres = 4e3;
 
 % set the volume to 0.5
 scale = SoundVolume(0.5);
@@ -73,9 +70,8 @@ for i = 1:500
     
     % this blurs the image to reduce the number of edges
     I = imgaussfilt(I, gauss_filt_size);
-    % apply a sobel filter
+%     apply a sobel filter
     res = edge(I, 'Sobel');
-    
     % show the edges
     subplot(2, 2, 1);
     imshow(res);
@@ -92,7 +88,6 @@ for i = 1:500
     
     % plot the linear version
     subplot(2, 2, 3);
-%     lin = ImToPolar(abs(normalised_ft), 0.5, 1, 64, 256);
     lin = ImToPolar(abs(F), 0.5, 1, 64, 256);
     imshow(lin);
     subplot(2, 2, 4);
@@ -100,12 +95,9 @@ for i = 1:500
     % sum the intensities at each x location (corresponding to an angle in
     % fft)
     peak_sum_in_x = sum(lin);
-    
-    % remove values corresponding to non-peaks
-%     peak_sum_in_x(peak_sum_in_x < prctile(peak_sum_in_x, peak_percentile)) = 0;
     smooth = filter(filt_b, filt_a, peak_sum_in_x);
     
-    % calculate the mean of top percentiles of intensities
+    % calculate the mean of intensities
     smooth = filter(filt_b, filt_a, smooth);
     m = mean(smooth_buffer);
     % calculate the difference between the mean and m
@@ -155,8 +147,12 @@ for i = 1:500
             left_sum = left_sum * prev_down_sf;
             right_sum = right_sum * prev_up_sf;
         end
-        
-        if (abs(left_sum - right_sum) > lr_thresh)
+        disp('Stationary');
+        disp(max(abs(sum_arr_next - sum_arr)));
+        disp('LR');
+        disp(abs(left_sum - right_sum));
+        if ((abs(left_sum - right_sum) > lr_thresh) && ...
+                  max(abs(sum_arr_next - sum_arr)) > stationionary_thres)
             if (left_sum > right_sum)
                 disp('Left');
                 if (scale >= (min_vol + vol_step))
@@ -176,7 +172,6 @@ for i = 1:500
                 prev_right = 1;
                 prev_left = 0;
             end
-            disp(abs(left_sum - right_sum));
         else
             prev_left = 0;
             prev_right = 0;
@@ -185,13 +180,6 @@ for i = 1:500
         sum_arr = sum_arr_next;
         
         plot(x_locs, sum_arr./100, 'LineStyle', 'none', 'Marker', '*', 'MarkerSize', 10);
-%         % find the peaks
-%         [~, locs] = findpeaks(smooth_new, 'MinPeakDistance', 32, 'NPeaks', 5);
-%         
-%         if (numel(locs) < 2)
-%             locs = [0 locs];
-%         end
-%         plot(locs, zeros(1, numel(locs)), 'LineStyle', 'none', 'Marker', '*', 'MarkerSize', 10);
         hold off;
     end
 end
