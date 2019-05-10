@@ -74,7 +74,7 @@ while 1
     I = imresize(I, 0.5);
     I = double(I)/256;
     I = histeq(I);
-    
+
     % this blurs the image to reduce the number of edges
     I = imgaussfilt(I, gauss_filt_size);
     % apply a sobel filter
@@ -82,7 +82,7 @@ while 1
     % show the edges
     subplot(2, 2, 1);
     imshow(res);
-    
+
     % show the FFT
     subplot(2, 2, 2);
     F = fftshift(fft2(res));
@@ -92,42 +92,42 @@ while 1
     normalised_ft = 100*log(1+abs(F));
     % plot the DFT
     imagesc(normalised_ft);
-    
+
     % plot the linear version
     subplot(2, 2, 3);
     lin = ImToPolar(abs(F), 0.5, 1, 64, 256);
     imshow(lin);
     subplot(2, 2, 4);
-    
+
     % sum the intensities at each x location (corresponding to an angle in
     % fft)
     peak_sum_in_x = sum(lin);
     smooth = filter(filt_b, filt_a, peak_sum_in_x);
-    
+
     % calculate the mean of intensities
     smooth = filter(filt_b, filt_a, smooth);
-    
+
     sum_arr_prev = sum_arr_norm;
     sum_arr_norm = sum(reshape(smooth,r_width,[]));
     sum_arr_norm = (sum_arr_norm - 1.2e4) ./6.8e3;
-    
+
     m = mean(smooth_buffer);
     % calculate the difference between the mean and m
     smooth_new = abs(smooth - m);
     % store smooth data
-    
-    % if the sum of non-noise is smaller than 0.08 * sum(mean of smooth 
+
+    % if the sum of non-noise is smaller than 0.08 * sum(mean of smooth
     % buffer) then we assume the frame is noise
     if (sum(abs(smooth - m))*run_once <= noise_thresh*sum(abs(m)))
         pause(player);
         % update the smooth buffer
         smooth_buffer(smooth_buffer_cntr,:) = smooth;
         smooth_buffer_cntr = smooth_buffer_cntr + 1;
-        
+
         % wrap around
         if (smooth_buffer_cntr > smooth_buff_sz)
             smooth_buffer_cntr = 1;
-            
+
             % update run once (this assumes initially no hand)
             run_once = 1;
         end
@@ -185,12 +185,12 @@ while 1
                 disp('Capuring Scene');
                 run_once = 0;
                 cap_scene = 1;
-                stationary_count = 0;                
+                stationary_count = 0;
                 smooth_buffer = zeros(smooth_buff_sz, 256);
                 smooth_buffer_cntr = 1;
             end
         end
-        
+
         sum_arr = sum_arr_next;
     end
 end
